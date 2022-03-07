@@ -22,13 +22,11 @@ import pandas as pd
 from scipy.interpolate import griddata
 import matplotlib.pyplot as plt
 
+#Set the location to where you want to store the new files. Current setting = current working directory.
 dir_path=os.path.dirname(os.path.realpath(sys.argv[0]))
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-#This is the IBTRACS directory, and where we'll store the new files
 
-
-land_shp_fname = shpreader.natural_earth(resolution='50m',
-                                       category='physical', name='land')
+land_shp_fname = shpreader.natural_earth(resolution='50m',category='physical', name='land')
 
 land_geom = unary_union(list(shpreader.Reader(land_shp_fname).geometries()))
 land = prep(land_geom)
@@ -77,27 +75,6 @@ def shift_normal_distribution(mu_present,mu_future,mu_baseline,var_present,var_f
     
     return mu_shifted,var_shifted
 
-# def shift_coefficients(coef_present,coef_future,coef_baseline):
-#     """
-    
-
-#     Parameters
-#     ----------
-#     coef_present : coefficient present climate
-#     coef_future : coefficient future climate
-#     coef_baseline : coefficient baseline
-
-#     Returns
-#     -------
-#     coef_shifted
-
-#     """
-    
-#     coef_shifted=coef_baseline+(coef_future-coef_present)
-    
-#     return coef_shifted
-
-
 def BOUNDARIES_BASINS(idx):
     if idx=='EP': #Eastern Pacific
         lat0,lat1,lon0,lon1=5,60,180,285
@@ -114,8 +91,7 @@ def BOUNDARIES_BASINS(idx):
     
     return lat0,lat1,lon0,lon1
 
-
-def create_5deg_grid(locations,month,basin):
+def create_5deg_grid(locations,month,basin): #this function creates the 5-degree grid for the genesis locations (see also the STORM preprocessing scripts)
     step=5.
 
     lat0,lat1,lon0,lon1=BOUNDARIES_BASINS(basin)
@@ -124,8 +100,7 @@ def create_5deg_grid(locations,month,basin):
     else:
         lonspace=np.linspace(lon0,lon1,int(abs(lon0-lon1)/step)+1)
     
-    latspace=np.linspace(lat0,lat1,int(abs(lat0-lat1)/step)+1)
-    
+    latspace=np.linspace(lat0,lat1,int(abs(lat0-lat1)/step)+1)   
     
     lat_list=[locations[month][i][0] for i in range(len(locations[month])) if (lat0<=locations[month][i][0]<=lat1 and lon0<=locations[month][i][1]<=lon1)]
     lon_list=[locations[month][i][1] for i in range(len(locations[month])) if (lat0<=locations[month][i][0]<=lat1 and lon0<=locations[month][i][1]<=lon1)]
@@ -149,7 +124,7 @@ def create_5deg_grid(locations,month,basin):
     
     return count_matrix
   
-def create_1deg_grid(delta_count_matrix,basin,month):
+def create_1deg_grid(delta_count_matrix,basin,month): #this function creates the 1-degree genesis grid (see also STORM preprocessing scripts)
     step=5.
     
     lat0,lat1,lon0,lon1=BOUNDARIES_BASINS(basin)
@@ -183,17 +158,14 @@ def create_1deg_grid(delta_count_matrix,basin,month):
     for i in range(0,x):
         for j in range(0,y):
             if mdata_coarse[i,j]>0.50:
-                grid[i,j]='nan'
-                
-    # plt.figure()   
-    # im=plt.imshow(grid,vmin=0,vmax=12000)
-    # plt.colorbar(im)
-    # plt.show()
-        
+                grid[i,j]='nan'        
 
     return grid
 
-#%%
+#The functions below will calculate the shift in the STORM input variables based on the information from the global climate models. The output files are thus the shifted
+#STORM variables and represent the future-climate conditions (and serve as input for the STORM model).
+
+
 # =============================================================================
 # Step 1: Calculate the relative change in genesis frequency
 # =============================================================================
@@ -215,7 +187,7 @@ def Change_genesis_frequency(model):
     np.savetxt(os.path.join(__location__,'{}_IBTRACSDELTA_{}.txt'.format(dataset_name,model)),delta_poisson)
     
     del dataset_name, present, future
-#%%
+
 # =============================================================================
 # Step 2: Calculate the relative change in genesis months
 # This is given as the difference between the number of genesis per month for 
@@ -346,7 +318,7 @@ def Change_longitude_latitude(model):
             
             if basin=='NA':
                 for j in range(5,13):
-                    if ibtracs[i][j]>19.:
+                    if ibtracs[i][j]>19.: 
                         lijst.append(0.35)
                     else:
                         lijst.append(ibtracs[i][j])
