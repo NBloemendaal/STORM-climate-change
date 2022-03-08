@@ -3,13 +3,21 @@
 """
 Created on Thu Oct 15 13:12:35 2020
 
-This script opens the HadGEM ensemble member dataset and stores the relevant data.
-We will use the ensemble members to determine whether the delta approach is a good approach.
-We will do this analysis only for the Western Pacific!
+@author: Nadia Bloemendaal, nadia.bloemendaal@vu.nl
 
-@author: nbl370
+This script opens the TC datasets from the global climate models, and extracts the relevant STORM variables from them. 
+!!! IMPORTANT !!! Please find more information on the GCM datasets in Roberts et al (2020) Projected Future Changes in Tropical Cyclones using the CMIP6 HighResMIP Multimodel
+Ensemble", including information on where to find the GCM datasets. I cannot send you the datasets directly, these need to be downloaded via the Jasmin server so that they have a 
+record of who is using their datasets. I will therefore NOT reply to such requests!
+
+This script will generate a substantial amount of files. Some of these are used in the creation of the STORM input dataset, whereas other files can support in any validation
+undertakings. I therefore left everything in, but you can alter these output files if deemed necessary.
+
+This script is part of the STORM Climate change research. Please read the corresponding paper before commercing.
+Bloemendaal et al (2022) A globally consistent local-scale assessment of future tropical cyclone risk. Paper published in Science Advances.
+
+Copyright (C) 2020 Nadia Bloemendaal. All versions realeased under the GNU General Public License v3.0.
 """
-
 
 import numpy as np 
 import xarray as xr 
@@ -118,8 +126,7 @@ monthsall={'EP':[6,7,8,9,10,11],'NA':[6,7,8,9,10,11],'NI':[4,5,6,9,10,11],'SI':[
 #'CMCC-CM2-VHR4'
 for model in ['CMCC-CM2-VHR4','CNRM-CM6-1-HR','EC-Earth3P-HR','HadGEM3-GC31-HM']:  
     for period in ['PRESENT','FUTURE']:
-        #the ensemble runs have their own designated folder --> This is where the output files will be stored!
-        __datasets__=os.path.realpath('C:\\Users\\nbl370\\surfdrive\\Documents\\STORM programs NEW\\STORM CLIMATE CHANGE')
+        __datasets__=os.path.realpath(PLEASE SET YOUR PATH HERE)
         __location__=os.path.join(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))))
                 
         months={i:[] for i in ['EP','NA','NI','SI','SP','WP']}
@@ -194,7 +201,6 @@ for model in ['CMCC-CM2-VHR4','CNRM-CM6-1-HR','EC-Earth3P-HR','HadGEM3-GC31-HM']
             #future-climate: 01/01/2015-30/12/2050
      
             for i in range(idx0,len(first_point)):
-                #print(round(100*(i/len(first_point)),1),datetime.datetime.now()-starttime)
                 start=first_point[i]
                 end=first_point[i]+no_point[i]
                 
@@ -330,9 +336,7 @@ for model in ['CMCC-CM2-VHR4','CNRM-CM6-1-HR','EC-Earth3P-HR','HadGEM3-GC31-HM']
                 genesis_pres_var[basin][month]=[mupres,stdpres,mudp0,stddp0,pneg,ppos]  
                 
             poisson_list[basin]=[poisson[basin][0]/36.]
-    
-        print(months)
-                        
+                                      
         np.save(os.path.join(__location__,'POISSON_GENESIS_PARAMETERS_'+str(period)+'_'+str(model)+'_nothres.npy'),poisson_list)
         np.save(os.path.join(__location__,'TC_TRACK_VARIABLES_'+str(period)+'_'+str(model)+'_nothres.npy'),track)
         np.save(os.path.join(__location__,'TC_PRESSURE_VARIABLES_'+str(period)+'_'+str(model)+'_nothres.npy'),pressure_model)
