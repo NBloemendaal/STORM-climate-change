@@ -8,7 +8,8 @@ Generation of a global synthetic tropical cyclone hazard dataset using STORM.
 Sci Data 7, 40 (2020). https://doi.org/10.1038/s41597-020-0381-2
 
 Functions described here are part of the data pre-processing and derive the coefficients
-of the regression formulas. 
+of the regression formulas. These coefficients will not be used directly in the delta approach (some of the other output variables will). But it's good to keep these coefficients
+in case you want to run the GCMs directly through STORM.
 
 Copyright (C) 2020 Nadia Bloemendaal. All versions released under the GNU General Public License v3.0
 """
